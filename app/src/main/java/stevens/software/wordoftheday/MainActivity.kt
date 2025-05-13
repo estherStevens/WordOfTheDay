@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import stevens.software.wordoftheday.ui.theme.WordOfTheDayTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,3 +20,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+val montserratFontFamily = FontFamily(
+    Font(resId = R.font.montserrat_regular, weight = FontWeight.Normal)
+)
+
+val poltawskinowyFontFamily = FontFamily(
+    Font(resId = R.font.poltawskinowy_bold, weight = FontWeight.Bold)
+)
