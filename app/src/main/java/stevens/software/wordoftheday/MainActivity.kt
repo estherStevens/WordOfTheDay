@@ -7,15 +7,23 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
+import stevens.software.wordoftheday.di.appModule
+import stevens.software.wordoftheday.ui.WordOfTheDayScreen
 import stevens.software.wordoftheday.ui.theme.WordOfTheDayTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        startKoin {
+            androidContext(this@MainActivity)
+            modules(appModule)
+        }
         setContent {
             WordOfTheDayTheme {
-
+                WordOfTheDayScreen()
             }
         }
     }
