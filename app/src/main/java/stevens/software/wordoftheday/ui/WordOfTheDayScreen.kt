@@ -1,5 +1,6 @@
 package stevens.software.wordoftheday.ui
 
+import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +38,7 @@ import org.koin.androidx.compose.koinViewModel
 import stevens.software.wordoftheday.R
 import stevens.software.wordoftheday.montserratFontFamily
 import stevens.software.wordoftheday.poltawskinowyFontFamily
+import java.util.Locale
 
 @Composable
 fun WordOfTheDayScreen(
@@ -43,6 +46,41 @@ fun WordOfTheDayScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState()
 
+    val context = LocalContext.current
+    val textToSpeech = TextToSpeech(context, object : TextToSpeech.OnInitListener {
+        override fun onInit(status: Int) {}
+    })
+
+    textToSpeech.language = uiState.value?.locale
+
+    WordOfTheDayView(
+        word = uiState.value?.word?.word ?: "",
+        meaning = uiState.value?.word?.meaning ?: "",
+        onSpeakClicked = {
+            if(textToSpeech.isSpeaking){
+                textToSpeech.stop()
+            } else {
+                textToSpeech.speak(uiState.value?.word?.word,
+                    TextToSpeech.QUEUE_ADD,
+                    null,
+                    "0"
+                )
+                textToSpeech.speak(uiState.value?.word?.meaning,
+                    TextToSpeech.QUEUE_ADD,
+                    null,
+                    "1"
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun WordOfTheDayView(
+    word: String,
+    meaning: String,
+    onSpeakClicked: () -> Unit
+){
     val gradientBrush = Brush.verticalGradient(
         listOf(
             colorResource(R.color.background_gradient1),
@@ -78,7 +116,7 @@ fun WordOfTheDayScreen(
                         .padding(horizontal = 32.dp)
                 ) {
                     Text(
-                        text = uiState.value?.word?.word ?: "",
+                        text = word,
                         fontFamily = poltawskinowyFontFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 38.sp,
@@ -86,7 +124,7 @@ fun WordOfTheDayScreen(
                     )
                     Spacer(Modifier.size(12.dp))
                     Text(
-                        text = uiState.value?.word?.meaning ?: "",
+                        text = meaning,
                         fontFamily = montserratFontFamily,
                         fontWeight = FontWeight.Normal,
                         fontSize = 19.sp,
@@ -96,7 +134,7 @@ fun WordOfTheDayScreen(
             }
             Spacer(Modifier.size(40.dp))
             Button(
-                onClick = {},
+                onClick = onSpeakClicked,
                 shape = CircleShape,
                 colors = ButtonDefaults.buttonColors().copy(
                     containerColor = colorResource(R.color.button)
